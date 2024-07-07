@@ -3,7 +3,7 @@ import { deleteFromFavourites, getFavouriteMeals } from "../favourites_handler.j
 const createMealCard = (meal_details) => {
     const container = document.createElement("a");
     container.classList.add("meal_card");
-    container.href = `details/details.html?id=${meal_details.idMeal}`;
+    container.href = `${window.location.origin}/details/details.html?id=${meal_details.idMeal}`;
     container.target = "_blank";
     container.title = meal_details.strMeal;
 

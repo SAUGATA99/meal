@@ -14,6 +14,7 @@ const createMealResultItem = (meal_details) => {
     meal_item_container.setAttribute("meal_id", meal_details?.idMeal || null);
     meal_item_container.href = `details/details.html?id=${meal_details?.idMeal}`;
     meal_item_container.target = "blank";
+    meal_item_container.title = "Click to see details";
     meal_item_container.classList.add("meal_item");
 
     const meal_name = document.createElement("span");
@@ -27,6 +28,7 @@ const createMealResultItem = (meal_details) => {
     if(mealInFavourites(meal_details?.idMeal)) {
         fav_icon.classList.add("favourite_meal");
     }
+    fav_icon.title = "Set as favourite";
     fav_icon.textContent = "favorite";
     meal_item_container.appendChild(fav_icon);
 
@@ -54,14 +56,12 @@ const searchResultHandler = (event) => {
     
     if(!event.target.value || !event.target.value.trim()) {
         // hide search results container
-        // document.getElementById("search_results_container").style.display = "none";
         // restore default ui for input box
         event.target.parentElement.classList.remove("show_results");
         return;
     }
 
     // show search results container
-    // document.getElementById("search_results_container").style.display = "flex";
     // change ui of input box to show results
     event.target.parentElement.classList.add("show_results");
     
