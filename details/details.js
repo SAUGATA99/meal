@@ -24,8 +24,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
         document.getElementById("meal_name").textContent = meal_details.strMeal;
         document.getElementById("meal_image").src = meal_details.strMealThumb;
         document.getElementById("meal_image").alt = meal_details.strMeal;
-        document.getElementById("cuisine").src = meal_details.strArea;
-        document.getElementById("category").alt = meal_details.strCategory;
+        document.getElementById("cuisine").textContent = meal_details.strArea;
+        document.getElementById("category").textContent = meal_details.strCategory;
 
         const ingredient = document.getElementById("ingredients");
         Object.keys(meal_details).forEach(key => {

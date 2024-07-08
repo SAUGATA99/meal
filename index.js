@@ -1,5 +1,7 @@
 import { addToFavourites, deleteFromFavourites, mealInFavourites } from "./favourites_handler.js";
 
+let timeout_id;
+
 const fetchMealsByName = (partial_meal_name) => {
     return fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${partial_meal_name}`);
 }
@@ -50,34 +52,56 @@ const createMealResultItem = (meal_details) => {
     return meal_item_container;
 }
 
-const searchResultHandler = (event) => {
+const searchResultHandler = () => {
+    const meal_search_input = document.getElementById("meal_search_input");
     const meals_search_res_container = document.getElementById("search_results_container");
-    meals_search_res_container.textContent = "";
     
-    if(!event.target.value || !event.target.value.trim()) {
-        // hide search results container
-        // restore default ui for input box
-        event.target.parentElement.classList.remove("show_results");
+    // there's no actionable input
+    // hide search results dropdown
+    if(!meal_search_input.value || !meal_search_input.value.trim()) {
+        meal_search_input.parentElement.classList.remove("show_results");
         return;
     }
-
-    // show search results container
-    // change ui of input box to show results
-    event.target.parentElement.classList.add("show_results");
     
-    fetchMealsByName(event.target.value)
+    // show search results dropdown
+    meal_search_input.parentElement.classList.add("show_results");
+    
+    fetchMealsByName(meal_search_input.value)
     .then(res => res.json())
     .then(json_res => {
-        // render meal search responses
+        // clear previous results
+        meals_search_res_container.textContent = "";
+        // render responses
         json_res?.meals?.forEach(meal => {
             const meal_container = createMealResultItem(meal);
             meals_search_res_container.appendChild(meal_container);
         });
     })
     .catch(error => {
-        console.log("Error while fetching meals: ", error);
+        console.error("Error while fetching meals: ", error);
     });
 }
 
-document.getElementById("meal_search_input").addEventListener("input", searchResultHandler);
-// document.getElementById("meal_search_input").addEventListener("change", searchResultHandler);
+// Debouncing Function
+// this function will not entertain any inputs that are made within a certain timeframe(delay)
+// inputs with a specified amount of time gap between them will be handled
+// this ensures that last input within that timeframe will be handled
+// this time delay gives enough time for the previous api call to finish
+const debounceFunction = (handlerFunc, delay) => {
+    // if timeout is present
+    // that means a previous debounce function is waiting
+    // we cancel it and start a new one
+    if(timeout_id) {
+        clearTimeout(timeout_id);
+    }
+
+    // there were no inputs within the timeframe before now
+    // handle input
+    timeout_id = setTimeout(() => {
+        handlerFunc();
+        clearTimeout(timeout_id);
+    }, delay);
+
+}
+
+document.getElementById("meal_search_input").addEventListener("input", ()=>debounceFunction(searchResultHandler, 300));

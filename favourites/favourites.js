@@ -1,9 +1,18 @@
 import { deleteFromFavourites, getFavouriteMeals } from "../favourites_handler.js"; 
 
+const showHideNoFavsBanner = () => {
+    document.getElementById("no_favourites").style.display = "";
+
+    const meal_cards = document.querySelectorAll(".meal_card");
+    if(meal_cards.length) {
+        document.getElementById("no_favourites").style.display = "none";
+    }
+}
+
 const createMealCard = (meal_details) => {
     const container = document.createElement("a");
     container.classList.add("meal_card");
-    container.href = `${window.location.origin}/details/details.html?id=${meal_details.idMeal}`;
+    container.href = `${window.location.origin}/meal/details/details.html?id=${meal_details.idMeal}`;
     container.target = "_blank";
     container.title = meal_details.strMeal;
 
@@ -47,6 +56,9 @@ const createMealCard = (meal_details) => {
         deleteFromFavourites(meal_details.idMeal);
         // remove meal card
         container.remove();
+
+        // show/hide no favourites meals banner
+        showHideNoFavsBanner();
     });
 
     return container;
@@ -62,9 +74,13 @@ document.addEventListener("DOMContentLoaded", (event) => {
         .then(res => res.json())
         .then(json => {
             if(json?.meals) {
+                // render favourite meal cards
                 const meal_card = createMealCard(json.meals[0]);
                 meals_container.appendChild(meal_card);
             }
+
+            // show/hide no favourites meals banner
+            showHideNoFavsBanner();
         })
         .catch(error => console.log(`Error while fetching meal for id '${meal_id}' :`, error));
     });
